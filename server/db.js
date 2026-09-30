@@ -2,14 +2,27 @@ const Database = require('better-sqlite3');
 const path = require('path');
 const fs = require('fs');
 
-const dbPath = process.env.DB_PATH || path.join(__dirname, '../attendance.db');
+function resolveDatabasePath() {
+  const preferred = process.env.DB_PATH || path.join(process.cwd(), 'data', 'attendance.db');
+  const dbDir = path.dirname(preferred);
 
-// Ensure parent directory exists
-const dbDir = path.dirname(dbPath);
-if (!fs.existsSync(dbDir)) {
-  fs.mkdirSync(dbDir, { recursive: true });
+  try {
+    if (!fs.existsSync(dbDir)) {
+      fs.mkdirSync(dbDir, { recursive: true });
+    }
+    return preferred;
+  } catch (error) {
+    const fallback = path.join('/tmp', 'school-worker-tracker', 'attendance.db');
+    const fallbackDir = path.dirname(fallback);
+    if (!fs.existsSync(fallbackDir)) {
+      fs.mkdirSync(fallbackDir, { recursive: true });
+    }
+    console.warn(`Database directory ${dbDir} is not writable; falling back to ${fallback}.`);
+    return fallback;
+  }
 }
 
+const dbPath = resolveDatabasePath();
 const db = new Database(dbPath);
 
 // Performance & integrity pragmas
