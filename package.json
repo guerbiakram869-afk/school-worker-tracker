@@ -1,0 +1,25 @@
+{
+  "name": "school-worker-tracker",
+  "version": "1.0.0",
+  "description": "QR-based School Worker Check-in/Check-out System",
+  "main": "server/index.js",
+  "scripts": {
+    "dev": "node scripts/dev.js",
+    "start": "node server/index.js",
+    "seed": "node server/seed.js",
+    "build": "npm run build --prefix client",
+    "dev:server": "node server/index.js",
+    "dev:client": "npm run dev --prefix client",
+    "test": "node tests/api.test.js"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "better-sqlite3": "^13.0.3",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.4",
+    "express": "^5.2.1"
+  }
+}

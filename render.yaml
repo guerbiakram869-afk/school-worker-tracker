@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: school-worker-tracker
+    runtime: node
+    plan: free
+    buildCommand: npm install && cd client && npm install && npm run build && cd ..
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: ADMIN_PASSWORD
+        sync: false # Set your secure admin password in the Render dashboard
+      - key: COOKIE_SECRET
+        generateValue: true
+      - key: DB_PATH
+        value: /var/data/attendance.db
+    disk:
+      name: attendance-data
+      mountPath: /var/data
+      sizeGB: 1
