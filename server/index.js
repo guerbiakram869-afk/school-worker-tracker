@@ -78,13 +78,41 @@ const clientDistPath = path.join(__dirname, '../client/dist');
 if (fs.existsSync(clientDistPath)) {
   app.use(express.static(clientDistPath));
 
-  // SPA fallback for /scan, /admin, and all other non-API routes (Express 4 & 5 compatible)
-  app.use((req, res) => {
+  // SPA fallback for /, /scan, /admin, and all other non-API routes (Express 4 & 5 compatible)
+  app.use((req, res, next) => {
     if (req.method === 'GET' && !req.path.startsWith('/api')) {
-      res.sendFile('index.html', { root: clientDistPath });
-    } else {
-      res.status(404).json({ error: 'Endpoint not found' });
+      return res.sendFile('index.html', { root: clientDistPath });
     }
+    next();
+  });
+} else {
+  console.warn('⚠️ WARNING: client/dist not found at', clientDistPath);
+  app.use((req, res, next) => {
+    if (req.method === 'GET' && !req.path.startsWith('/api')) {
+      return res.status(503).send(`
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <title>ELyassamine School Tracker</title>
+            <meta http-equiv="refresh" content="5">
+            <style>
+              body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; background: #f8fafc; color: #0f172a; text-align: center; }
+              .card { background: white; padding: 2.5rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); max-width: 480px; }
+              h2 { color: #1e3a8a; margin-top: 0; }
+              code { background: #e2e8f0; padding: 2px 6px; border-radius: 4px; }
+            </style>
+          </head>
+          <body>
+            <div class="card">
+              <h2>ELyassamine School Tracker</h2>
+              <p>The client build is missing. In Render Dashboard, ensure <strong>Build Command</strong> is set to <code>npm run build</code>.</p>
+              <p style="font-size: 0.85rem; color: #64748b;">Refreshing automatically...</p>
+            </div>
+          </body>
+        </html>
+      `);
+    }
+    next();
   });
 }
 

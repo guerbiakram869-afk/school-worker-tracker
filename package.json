@@ -7,7 +7,8 @@
     "dev": "node scripts/dev.js",
     "start": "node server/index.js",
     "seed": "node server/seed.js",
-    "build": "npm run build --prefix client",
+    "build": "npm --prefix client install && npm --prefix client run build",
+    "postinstall": "npm --prefix client install && npm --prefix client run build",
     "dev:server": "node server/index.js",
     "dev:client": "npm run dev --prefix client",
     "test": "node tests/api.test.js"
